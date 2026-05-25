@@ -1,0 +1,49 @@
+# Dependencies
+node_modules/
+light_chat/node_modules/
+
+# Build output
+dist/
+coverage/
+
+# Local environment / tool state
+.direnv/
+.envrc
+.pi/
+.claude/
+local/
+CLAUDE.md
+CLAUDE.local.md
+
+# Secrets / env files
+.env
+.env.*
+!.env.example
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# OS / editor
+.DS_Store
+*.swp
+*.swo
+
+# Optional local dev environment
+shell.nix
+
+# Project-local notes
+Plan.md
+disto
+.direnv
+.pi
+.claude
+local
+*.log
+*.env
+.env.*
+.DS_Store
+

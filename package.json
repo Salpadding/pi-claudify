@@ -1,0 +1,58 @@
+{
+	"name": "pi-claudify",
+	"version": "0.1.0",
+	"description": "Claudify extension for pi - Claude Code-style permissions and CLAUDE.md priority",
+	"type": "module",
+	"main": "./dist/index.js",
+	"types": "./dist/index.d.ts",
+	"exports": {
+		".": {
+			"types": "./dist/index.d.ts",
+			"import": "./dist/index.js"
+		}
+	},
+	"files": [
+		"dist"
+	],
+	"scripts": {
+		"clean": "rm -rf dist",
+		"build": "tsc -p tsconfig.build.json && pnpm --filter pi-claudify-light-chat build",
+		"build:ts": "tsc -p tsconfig.build.json",
+		"build:chat": "pnpm --filter pi-claudify-light-chat build",
+		"dev": "tsc -p tsconfig.build.json --watch",
+		"dev:chat": "pnpm --filter pi-claudify-light-chat dev",
+		"test": "pnpm build && node --test src/test/*.test.mjs"
+	},
+	"pnpm": {
+		"onlyBuiltDependencies": [
+			"tree-sitter",
+			"tree-sitter-bash"
+		]
+	},
+	"dependencies": {
+		"@earendil-works/pi-agent-core": "^0.75.1",
+		"@earendil-works/pi-coding-agent": "^0.75.1",
+		"@earendil-works/pi-tui": "^0.75.1",
+		"@sinclair/typebox": "^0.34.49",
+		"@types/diff": "^8.0.0",
+		"@types/picomatch": "^4.0.3",
+		"diff": "^8.0.4",
+		"express": "^5.2.1",
+		"neovim": "^5.4.0",
+		"picomatch": "^4.0.4"
+	},
+	"devDependencies": {
+		"@types/express": "^5.0.6",
+		"@types/node": "^25.5.2",
+		"typescript": "^5.0.0"
+	},
+	"license": "MIT",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/Salpadding/pi-claudify.git"
+	},
+	"bugs": {
+		"url": "https://github.com/Salpadding/pi-claudify/issues"
+	},
+	"homepage": "https://github.com/Salpadding/pi-claudify#readme"
+}
