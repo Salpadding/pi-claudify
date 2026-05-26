@@ -1,11 +1,12 @@
 import MarkdownIt from "markdown-it";
-import markdownItKatex from "markdown-it-katex";
+import { installMathPlugin } from "./math-token";
 import hljs from "highlight.js/lib/core";
 import bash from "highlight.js/lib/languages/bash";
 import css from "highlight.js/lib/languages/css";
 import diff from "highlight.js/lib/languages/diff";
 import javascript from "highlight.js/lib/languages/javascript";
 import json from "highlight.js/lib/languages/json";
+import latex from "highlight.js/lib/languages/latex";
 import markdown from "highlight.js/lib/languages/markdown";
 import python from "highlight.js/lib/languages/python";
 import shell from "highlight.js/lib/languages/shell";
@@ -17,6 +18,7 @@ hljs.registerLanguage("css", css);
 hljs.registerLanguage("diff", diff);
 hljs.registerLanguage("javascript", javascript);
 hljs.registerLanguage("json", json);
+hljs.registerLanguage("latex", latex);
 hljs.registerLanguage("markdown", markdown);
 hljs.registerLanguage("python", python);
 hljs.registerLanguage("shell", shell);
@@ -27,10 +29,11 @@ hljs.registerAliases(["js", "jsx", "mjs", "cjs"], { languageName: "javascript" }
 hljs.registerAliases(["ts", "tsx"], { languageName: "typescript" });
 hljs.registerAliases(["html", "svg"], { languageName: "xml" });
 hljs.registerAliases(["md"], { languageName: "markdown" });
+hljs.registerAliases(["tex", "ltx"], { languageName: "latex" });
 hljs.configure({ ignoreUnescapedHTML: true });
 
 const md = new MarkdownIt({ html: false, linkify: true, breaks: false, typographer: false });
-md.use(markdownItKatex, { throwOnError: false, strict: "ignore" });
+installMathPlugin(md);
 
 const defaultLinkOpen = md.renderer.rules.link_open || ((tokens, idx, options, _env, self) => self.renderToken(tokens, idx, options));
 md.renderer.rules.link_open = (tokens, idx, options, env, self) => {
@@ -63,13 +66,13 @@ export function highlightCode(code: string, lang: string): string {
   }
 }
 
-export function normalizeLanguage(lang: string): string {
+function normalizeLanguage(lang: string): string {
   const value = String(lang || "").toLowerCase();
   if (!value || value === "code" || value === "text" || value === "plain") return "";
   return ({
     js: "javascript", jsx: "javascript", mjs: "javascript", cjs: "javascript",
     ts: "typescript", tsx: "typescript", sh: "bash", zsh: "bash",
-    html: "xml", svg: "xml", md: "markdown",
+    html: "xml", svg: "xml", md: "markdown", tex: "latex", ltx: "latex",
   })[value] || value;
 }
 
@@ -77,32 +80,10 @@ function escapeHtml(text: string): string {
   return String(text).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 }
 
-function protectSegments(text: string, regexp: RegExp, prefix: string) {
-  const segments: string[] = [];
-  const output = text.replace(regexp, (match) => {
-    const token = `@@${prefix}_PROTECTED_${segments.length}@@`;
-    segments.push(match);
-    return token;
-  });
-  return { output, segments, prefix };
-}
-
-function restoreSegments(text: string, segments: string[], prefix: string): string {
-  const regexp = new RegExp(`@@${prefix}_PROTECTED_(\\d+)@@`, "g");
-  return text.replace(regexp, (_, idx) => segments[Number(idx)] ?? "");
-}
-
 export function renderMarkdown(text: string): string {
   if (!text) return "";
-  let normalized = String(text).replace(/\r\n/g, "\n");
-  const fenced = protectSegments(normalized, /(```[\s\S]*?```|~~~[\s\S]*?~~~)/g, "FENCED");
-  const inline = protectSegments(fenced.output, /(`+)([\s\S]*?)\1/g, "INLINE");
-  let output = inline.output
-    .replace(/\\\[([\s\S]*?)\\\]/g, (_, body) => `\n$$\n${body.trim()}\n$$\n`)
-    .replace(/\\\(([\s\S]*?)\\\)/g, (_, body) => `$${body}$`);
-  output = restoreSegments(output, inline.segments, inline.prefix);
-  output = restoreSegments(output, fenced.segments, fenced.prefix);
-  return md.render(output);
+  const normalized = String(text).replace(/\r\n/g, "\n");
+  return md.render(normalized);
 }
 
 declare global {

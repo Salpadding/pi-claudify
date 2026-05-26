@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { highlightCode, normalizeLanguage } from "./lib/markdown";
+  import { highlightCode } from "./lib/markdown";
 
   type Props = {
     code?: string;
@@ -10,7 +10,7 @@
   let { code = "", language = "text", wrapperClass = "" }: Props = $props();
 
   function highlighted(): string {
-    return highlightCode(code, normalizeLanguage(language));
+    return highlightCode(code, language);
   }
 </script>
 
