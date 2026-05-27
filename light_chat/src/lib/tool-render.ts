@@ -43,7 +43,7 @@ export function isReadTool(tool: ToolExecution): boolean {
 }
 
 export function isExecuteTool(tool: ToolExecution): boolean {
-  return /^(bash|python|ruby)$/i.test(tool.toolName);
+  return /^(bash|python|ruby|node|neovim|rails)$/i.test(tool.toolName);
 }
 
 export function isEditFamilyTool(tool: ToolExecution): boolean {

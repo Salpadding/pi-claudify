@@ -3,6 +3,8 @@ install:
 	ln -sfnT $(PWD)/dist ${HOME}/.pi/agent/extensions/pi-claudify
 	rsync -avp --delete  src/resource/ ./dist/resource/ --exclude light_chat
 	cp package.json  ./dist/
+	mkdir -p $(HOME)/.config/nvim/lua/u/aux
+	cp ./src/resource/neovim/lua/neovim_diff.lua $(HOME)/.config/nvim/lua/u/aux
 
 
 test:

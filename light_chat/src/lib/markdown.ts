@@ -7,9 +7,12 @@ import diff from "highlight.js/lib/languages/diff";
 import javascript from "highlight.js/lib/languages/javascript";
 import json from "highlight.js/lib/languages/json";
 import latex from "highlight.js/lib/languages/latex";
+import lua from "highlight.js/lib/languages/lua";
 import markdown from "highlight.js/lib/languages/markdown";
 import python from "highlight.js/lib/languages/python";
+import ruby from "highlight.js/lib/languages/ruby";
 import shell from "highlight.js/lib/languages/shell";
+import vim from "highlight.js/lib/languages/vim";
 import typescript from "highlight.js/lib/languages/typescript";
 import xml from "highlight.js/lib/languages/xml";
 
@@ -19,9 +22,12 @@ hljs.registerLanguage("diff", diff);
 hljs.registerLanguage("javascript", javascript);
 hljs.registerLanguage("json", json);
 hljs.registerLanguage("latex", latex);
+hljs.registerLanguage("lua", lua);
 hljs.registerLanguage("markdown", markdown);
 hljs.registerLanguage("python", python);
+hljs.registerLanguage("ruby", ruby);
 hljs.registerLanguage("shell", shell);
+hljs.registerLanguage("vim", vim);
 hljs.registerLanguage("typescript", typescript);
 hljs.registerLanguage("xml", xml);
 hljs.registerAliases(["sh", "zsh"], { languageName: "bash" });
@@ -30,6 +36,7 @@ hljs.registerAliases(["ts", "tsx"], { languageName: "typescript" });
 hljs.registerAliases(["html", "svg"], { languageName: "xml" });
 hljs.registerAliases(["md"], { languageName: "markdown" });
 hljs.registerAliases(["tex", "ltx"], { languageName: "latex" });
+hljs.registerAliases(["vimscript"], { languageName: "vim" });
 hljs.configure({ ignoreUnescapedHTML: true });
 
 const md = new MarkdownIt({ html: false, linkify: true, breaks: false, typographer: false });
@@ -47,11 +54,13 @@ md.renderer.rules.fence = (tokens, idx) => {
   const info = token.info ? token.info.trim() : "";
   const lang = info ? info.split(/\s+/)[0] : "code";
   const highlighted = highlightCode(token.content.replace(/\n$/, ""), lang);
-  const langClass = /^[A-Za-z0-9_-]+$/.test(lang) ? ` language-${escapeHtml(lang)}` : "";
-  return '<div class="code-block-wrapper">'
-    + '<div class="code-block-header"><span>' + escapeHtml(lang) + '</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>'
-    + '<pre><code class="hljs' + langClass + '">' + highlighted + '</code></pre>'
-    + '</div>\n';
+  const safeLang = escapeHtml(lang);
+  const langClass = /^[A-Za-z0-9_-]+$/.test(lang) ? ` language-${safeLang}` : "";
+
+  return `<div class="code-block-wrapper">
+<div class="code-block-header"><span>${safeLang}</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+<pre><code class="hljs${langClass}">${highlighted}</code></pre>
+</div>\n`;
 };
 
 export function highlightCode(code: string, lang: string): string {
@@ -73,6 +82,7 @@ function normalizeLanguage(lang: string): string {
     js: "javascript", jsx: "javascript", mjs: "javascript", cjs: "javascript",
     ts: "typescript", tsx: "typescript", sh: "bash", zsh: "bash",
     html: "xml", svg: "xml", md: "markdown", tex: "latex", ltx: "latex",
+    node: "javascript", rails: "ruby", vimscript: "vim",
   })[value] || value;
 }
 

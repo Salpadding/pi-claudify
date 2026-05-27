@@ -13,10 +13,15 @@
   });
 
   function codeLanguage(): string {
-    if (/^bash$/i.test(tool.toolName)) return "bash";
-    if (/^python$/i.test(tool.toolName)) return "python";
-    if (/^ruby$/i.test(tool.toolName)) return "ruby";
-    return tool.toolName.toLowerCase();
+    const toolName = tool.toolName.toLowerCase();
+    const args = tool.args as any;
+
+    if (toolName === "bash") return "bash";
+    if (toolName === "python") return "python";
+    if (toolName === "ruby" || toolName === "rails") return "ruby";
+    if (toolName === "node") return "javascript";
+    if (toolName === "neovim") return args?.language === "vimscript" ? "vim" : "lua";
+    return toolName;
   }
 
   function executableCode(): string {
